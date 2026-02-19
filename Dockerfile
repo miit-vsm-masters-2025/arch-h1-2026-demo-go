@@ -10,10 +10,11 @@ COPY . ./
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/server ./
 
 # Runtime stage
-FROM gcr.io/distroless/base-debian12
+FROM alpine:3.20
+RUN addgroup -S app && adduser -S -G app app
 WORKDIR /
 COPY --from=builder /app/server /server
 
 EXPOSE 8080
-USER nonroot:nonroot
+USER app
 ENTRYPOINT ["/server"]
